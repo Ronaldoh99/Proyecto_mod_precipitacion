@@ -1,0 +1,114 @@
+---
+title: "Informe_1_Analisis_tesis"
+author: "Ronaldo Hernandez - Hector Velasco"
+date: "22/3/2023"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r echo=TRUE,warning=FALSE, message=FALSE }
+
+
+#utilizados para la tesis
+library(colmaps)
+library(ggplot2)
+library(sp)
+library(sf)
+library(dplyr)
+library(gpclib)
+library(broom)
+
+
+```
+
+\#Análisis de la precipitación en el departamento del Meta
+
+El departamento del meta situado en el centro de Colombia al oeste de los Andes comprende una superficie de 85.635 Km2 y su población en el 2018 fue de 1,3 millones de habitantes, Su capital es Villavicencio. Destacado por su diversa fauna y flora registrando 6.965 especies biológicas. El Meta está localizado entre los 04º54'25'' y los 01º36'52'' de latitud norte, y los 71º4'38'' y 74º53'57'' de longitud oeste. Limitando con el norte de Bogotá Capital de Colombia, siendo el 4 departamento más extenso de Colombia.
+
+Su principal participación porcentual de la actividad económica esta situada por la explotación de minas y canteras, la Agricultura, ganadería, caza, silvicultura y pesca
+
+Con influencias intertropicales o de ZCIT (zona de convergencia intertropical) , también conocida como Zona de convergencia ecuatorial se caracteriza por ser curvas con extensiones que en Colombia se tiene presencia de las 2 franjas como se observa en la Figura 1.Donde el fenómeno de la niña y el niño los cuales están estrechamente relacionados con las zonas de convergencia intertropical.
+
+Este departamento se encuentra ubicado en la región de la Orinoquia, al este del país, y es atravesado por importantes ríos como el Meta y el Guaviare. Por lo que sus temporadas de estos fenómenos se comprenden en la temporada seca (niño) se extiende generalmente de el mes de diciembre hasta marzo, mientras que la temporada de lluvias (niña) se extiende de abril a noviembre .
+
+```{r}
+
+mapameta <- departamentos[departamentos$id == 50,]
+metamarca <- municipios[municipios@data$id_depto == 50,]
+
+# Crear una columna en el objeto departamentos que indique si el departamento es Meta o no
+departamentos@data$is_meta <- ifelse(departamentos@data$id == 50, "Meta", "Otros departamentos")
+
+# Convertir los datos de departamentos a formato sf
+departamentos_sf <- st_as_sf(departamentos)
+
+# Crear el gráfico base
+mapa_ggplot <- ggplot() +
+  geom_sf(data = departamentos_sf, aes(fill = is_meta), color = "black", size = 0.1) +
+  scale_fill_manual(values = c("Otros departamentos" = "white", "Meta" = "dodgerblue"), name = "Departamentos", labels = c("Otros departamentos", "Meta")) +
+  coord_sf()
+
+# Agregar el título y ajustar los ejes para mostrar longitudes y latitudes
+mapa_ggplot +
+  ggtitle("Colombia - Fronteras Municipales") +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold")) +
+  labs(x = "Longitud", y = "Latitud") +
+  theme(axis.text.x = element_text(size = 8), axis.text.y = element_text(size = 8))
+
+```
+
+Se observa el mapa de Colombia resaltando el departamento objeto de estudio Meta
+
+Se presenta también el mapa del departamento del Meta
+
+```{r,warning=FALSE,message=FALSE}
+# Crear una función de escala de colores personalizada con tonos de azul aguamarina
+escala_colores <- function(n) {
+  colorRampPalette(c("deepskyblue4", "deepskyblue", "aquamarine"))(n)
+}
+
+# Agregar una columna de colores a los datos de municipios
+metamarca@data$colores <- escala_colores(nrow(metamarca))
+
+# Crear el gráfico
+mapa_ggplot <- colmap(map = metamarca, map_id = 'region', autocomplete = TRUE)
+
+# Ajustar la escala de colores en función de la columna creada previamente
+mapa_ggplot <- mapa_ggplot + scale_fill_manual(values = metamarca@data$colores)
+
+# Agregar el título y ajustar los ejes para mostrar longitudes y latitudes
+mapa_ggplot +
+  ggtitle("Mapa del departamento del Meta") +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold")) +
+  labs(x = "Longitud", y = "Latitud") +
+  theme(axis.text.x = element_text(size = 8), axis.text.y = element_text(size = 8))
+
+
+```
+
+La Precipitación juega un papel fundamental en la dinámica del ecosistema. La precipitación es un fenómeno natural que se presenta de manera irregular en el tiempo y en el espacio, y su variabilidad histórica es una de las principales preocupaciones para los científicos que estudian el clima. De acuerdo con los registros históricos de las estaciones meteorológicas del Instituto de Hidrología, Meteorología y estudios ambientales (IDEAM) la precipitación presenta en el departamento un patrón estacional bien definido, con temporadas de lluvias y secas.
+
+La variabilidad de la precipitación en el Departamento del Meta es alta y está influenciada por diferentes factores como la temperatura del mar, el viento, la topografía y la presencia de sistemas atmosféricos como la Zona Tropical Convergente (ZCIT). Además, diferentes investigadores han estudiado los cambios históricos en la precipitación en la región y han encontrado que su comportamiento es muy variable y depende de la Amazonía y del ciclo hidrológico en los océanos Pacífico y Atlántico. En algunas zonas recibe una precipitación media anual alrededor de 3.000mm, mientras que otras zonas puede ser alrededor de 1.500 mm, respecto a la precipitación media mensual se han realizado estimaciones de un patrón estacional definido con meses de alta y baja precipitación con un promedio en un intervalo de 300 a 400 mm en temporadas de lluvia y puede ser inferior a los 50 mm en algunas zonas para las temporadas secas, frente la precipitación semanal esta alrededor de 100 a 200 mm en épocas de lluvia mientras que en temporadas de sequia se presentan valores de 0 para la semana esto se refleja en la figura 44 la cual presenta las graficas de las series temporales a lo largo del tiempo por estaciones en promedio (semanal o diario, por definirse) En promedio para la precipitación diaria en temporadas de lluvias esta alrededor de 20 -- 50 mm en algunas zonas del departamento y para las temporadas secas se presentan datos en 0 para algunas zonas.
+
+La precipitación diaria se mide con un instrumento llamado pluviómetro, que registra la cantidad de lluvia que cae en un área específica durante un período de tiempo específico. Un pluviómetro consiste en un recipiente en forma de embudo que recoge el agua de lluvia y la dirige hacia un cilindro. Los cilindros graduados generalmente están graduados en milímetros para que la cantidad de lluvia que cae en un área determinada pueda determinarse con precisión. Los pluviómetros pueden ser automáticos o manuales, y en ambos casos la información que proporcionan se registra en una base de datos para su posterior análisis.
+
+El IDEAM cuenta con los 2 tipos de pluviómetros para realizar el constante seguimiento y registro de las mediciones de la precipitación diario para la precipitación en cada estación de meteorológica, estableciéndose como una variable continua, aunque sus tomas son en putos de horas específicos, se establece continua ya que puede tomar cualquier valor dentro de un rango determinado en este caso la cantidad de precipitación en milímetros.
+
+```{r}
+#Estaciones de Meta Villa Vicencio 
+
+load("C:/Users/ronal/Desktop/SEMETRE 9/TRABAJO DE GRADO 1/Proyecto_mod_precipitacion/Datos/wth_data_caf_ideam.RData")
+
+
+library(dplyr)
+library(leaflet)
+datosmeta = ws_selected %>% filter(ws_selected$Departamento=="META")
+
+
+leaflet() %>% addTiles() %>% addCircleMarkers(lng = datosmeta$lon,lat = datosmeta$lat)
+
+
+
+
+```
