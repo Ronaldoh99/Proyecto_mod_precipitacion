@@ -6,7 +6,7 @@ output:
   html_document:
     df_print: paged
 ---
-
+Librerias a usar
 ```{r echo=TRUE,warning=FALSE, message=FALSE }
 
 
