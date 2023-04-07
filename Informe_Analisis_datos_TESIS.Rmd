@@ -9,6 +9,7 @@ output:
 Librerias a usar
 ```{r echo=TRUE,warning=FALSE, message=FALSE }
 
+Paquetes usados
 
 #utilizados para la tesis
 library(colmaps)
