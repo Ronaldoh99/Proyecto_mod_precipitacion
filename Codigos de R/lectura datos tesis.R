@@ -1,5 +1,5 @@
 #lectura de datos 
-load("C:/Users/ronal/Desktop/SEMETRE 9/TRABAJO DE GRADO 1/Proyecto_mod_precipitacion/Datos/wth_data_caf_ideam.RData")
+load("C:/Users/ronal/Desktop/SEMETRE 9/TRABAJO DE GRADO 1/Proyecto_mod_precipitacion/Datos/wth_data_caf_ideam.RData") # nolint # nolint: line_length_linter.
 
 ##bases candidatas
 
@@ -165,6 +165,7 @@ ggplot(data = datos_combinados, aes(x = Date, y = prec)) +
 ############# GRAFICO CIRCULO CORRELACION #############################
 library(ggcorrplot)
 library(tidyverse)
+library(purrr)
 
 
 #Transformacion de los datos para sacar los dataframes y tener las variables fecha y prec
@@ -182,7 +183,7 @@ print(datos_combinados)
 # Asumiendo que 'datos_combinados' es el data.frame que obtuvimos en el paso anterior
 
 datos_wider <- datos_combinados %>%
-  pivot_wider(names_from = ID, values_from = prec)
+  tidyr::pivot_wider(names_from = ID, values_from = prec)
 
 print(datos_wider)
 
