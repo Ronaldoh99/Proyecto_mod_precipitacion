@@ -12,7 +12,7 @@ instalar_si_no_existe <- function(nombre_paquete) {
 # Lista de paquetes necesarios
 paquetes <- c("sf", "ggplot2", "rnaturalearth", "rnaturalearthdata", "devtools", 
               "colmaps", "sp", "dplyr", "gpclib", "broom","leaflet","tidyverse",
-              "purrr","ggspatial","RColorBrewer")
+              "purrr","ggspatial","RColorBrewer","utils")
 
 # Instalar e importar paquetes
 lapply(paquetes, instalar_si_no_existe)
@@ -200,9 +200,19 @@ datos_combinados <- datosmeta %>%
   select(combined) %>%
   unnest(cols = c(combined))
 
-print(datos_combinados)
+print(datos_combinados)         #observar los datos
+is.data.frame(datos_combinados) #confirmar que es data.frame
+str(datos_combinados)
+#Exportacion de datos en formato para modelo KNN que se ejecutara en python
 
-#Exportacion de 
+library(utils)
+#write.csv2(datos_combinados, "Datos/datos_combinados_para_modelo.csv", row.names = FALSE)
+#write.table(datos_combinados, "Datos/datos_combinados_para_modelo.txt", sep = ";", row.names = FALSE, col.names = TRUE, quote = FALSE)
+#datosprueba1<-read.csv2("datos_combinados_para_modelo.csv")
+#str(datosprueba1)
+#datosprueba2<-read.csv("Datos/datos_combinados_para_modelo.txt",sep = ";")
+#str(datosprueba2)
+
 
 #Tranformar para que se guarde las columnas como nombre del data frame
 
