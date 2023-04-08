@@ -1,6 +1,30 @@
 #lectura de datos 
 load("C:/Users/ronal/Desktop/SEMETRE 9/TRABAJO DE GRADO 1/Proyecto_mod_precipitacion/Datos/wth_data_caf_ideam.RData") # nolint # nolint: line_length_linter.
 
+#Lectura de paquetes
+instalar_si_no_existe <- function(nombre_paquete) {
+  if (!requireNamespace(nombre_paquete, quietly = TRUE)) {
+    install.packages(nombre_paquete)
+  }
+  library(nombre_paquete, character.only = TRUE)
+}
+
+# Lista de paquetes necesarios
+paquetes <- c("sf", "ggplot2", "rnaturalearth", "rnaturalearthdata", "devtools", 
+              "colmaps", "sp", "dplyr", "gpclib", "broom","leaflet","tidyverse",
+              "purrr","ggspatial","RColorBrewer")
+
+# Instalar e importar paquetes
+lapply(paquetes, instalar_si_no_existe)
+
+# Instalar colmaps desde GitHub
+if (!"colmaps" %in% rownames(installed.packages())) {
+  devtools::install_github("nebulae-co/colmaps", force = TRUE)
+}
+
+# Importar colmaps
+library(colmaps)
+
 ##bases candidatas
 
 #Candidata 1
@@ -177,6 +201,8 @@ datos_combinados <- datosmeta %>%
   unnest(cols = c(combined))
 
 print(datos_combinados)
+
+#Exportacion de 
 
 #Tranformar para que se guarde las columnas como nombre del data frame
 
