@@ -73,7 +73,7 @@ head(datostable,84)
 
 # Exportar el data.frame a un archivo de Excel
 library(writexl)
-write_xlsx(datostable, "datostable.xlsx")
+#write_xlsx(datostable, "datostable.xlsx")
 
 
 #Graficos de series para cada estacion
