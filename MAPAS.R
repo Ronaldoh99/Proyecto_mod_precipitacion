@@ -1,27 +1,30 @@
 #Lectura de paquetes
-library(sf)
-library(ggplot2)
-library(rnaturalearth)
-library(rnaturalearthdata)
-library(devtools)
-#devtools::install_github("nebulae-co/colmaps", force = TRUE)
+instalar_si_no_existe <- function(nombre_paquete) {
+  if (!requireNamespace(nombre_paquete, quietly = TRUE)) {
+    install.packages(nombre_paquete)
+  }
+  library(nombre_paquete, character.only = TRUE)
+}
+
+# Lista de paquetes necesarios
+paquetes <- c("sf", "ggplot2", "rnaturalearth", "rnaturalearthdata", "devtools", 
+              "colmaps", "sp", "dplyr", "gpclib", "broom")
+
+# Instalar e importar paquetes
+lapply(paquetes, instalar_si_no_existe)
+
+# Instalar colmaps desde GitHub
+if (!"colmaps" %in% rownames(installed.packages())) {
+  devtools::install_github("nebulae-co/colmaps", force = TRUE)
+}
+
+# Importar colmaps
 library(colmaps)
-library(ggplot2)
-library(sp)
-#install.packages("devtools")
-library("colmaps")
+
+# Tu nombre de municipios
 head(municipios@data)
-library("ggplot2")
-library(colmaps)
-library(ggplot2)
-library(sp)
-library(colmaps)
-library(ggplot2)
-library(sp)
-library(sf)
-library(dplyr)
-library(gpclib)
-library(broom)
+
+
 #Mapa de colombia por municipios
 colmap(municipios) +
   ggtitle("Colombia - Fronteras Municipales")
