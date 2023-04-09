@@ -247,6 +247,10 @@ datos_combinadoscalor <- datosmeta %>%
 
 print(datos_combinadoscalor)
 
+datosaexportar<- datos_combinadoscalor[,c(1:5)]
+datosaexportar
+#datos mas completos
+write.table(datosaexportar, "Datos/datos_combinados_para_modelo_con_coordenadas.txt", sep = ";", row.names = FALSE, col.names = TRUE, quote = FALSE)
 
 
 library(ggplot2)
