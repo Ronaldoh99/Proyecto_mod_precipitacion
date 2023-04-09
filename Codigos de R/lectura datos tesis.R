@@ -95,6 +95,10 @@ leaflet() %>% addTiles() %>% addCircleMarkers(lng = datosmeta$lon,lat = datosmet
 datostable <- data.frame(datosmeta$id,datosmeta$Nombre,datosmeta$lat,datosmeta$lon,datosmeta$na_percent)
 head(datostable,84)
 
+
+datostable2 <- data.frame(datosmeta$id,datosmeta$Nombre,datosmeta$lat,datosmeta$lon,datosmeta$na_percent,datosmeta$idate,datosmeta$fdate,datosmeta$years)
+head(datostable2,84)
+
 # Exportar el data.frame a un archivo de Excel
 library(writexl)
 #write_xlsx(datostable, "datostable.xlsx")
