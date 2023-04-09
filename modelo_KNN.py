@@ -31,7 +31,7 @@ def install_and_import(package):
         globals()[package] = importlib.import_module(package)
 
 # Lista de paquetes a instalar e importar
-packages = ['pandas', 'IPython', 'pandasgui', 'numpy', 'matplotlib','joblib']
+packages = ['pandas', 'IPython', 'pandasgui', 'numpy', 'matplotlib','joblib','cudf','cupy']
 
 for package in packages:
     install_and_import(package)
@@ -120,3 +120,93 @@ imputed_data = impute_precipitation_parallel(data)
 # utilizando KNN Imputer en paralelo para todas las estaciones en tus datos. 
 # El parámetro n_jobs controla el número de procesos en paralelo. 
 # Si n_jobs=-1, se utilizarán todos los núcleos disponibles en tu computadora.
+
+import multiprocessing as mp
+
+def impute_precipitation_for_station(station_data, n_neighbors=5):
+    imputer = KNNImputer(n_neighbors=n_neighbors)
+    station_data_imputed = imputer.fit_transform(station_data[['precipitation']])
+    station_data['precipitation_imputed'] = station_data_imputed
+    return station_data
+
+def impute_precipitation_parallel(data, n_jobs=4):
+    stations = data['station_id'].unique()
+    pool = mp.Pool(processes=n_jobs)
+    results = [
+        pool.apply_async(impute_precipitation_for_station, args=(data[data['station_id'] == station],))
+        for station in stations
+    ]
+    imputed_data = pd.concat([result.get() for result in results], ignore_index=True)
+    pool.close()
+    pool.join()
+    return imputed_data
+
+imputed_data = impute_precipitation_parallel(data)
+print(imputed_data)
+
+
+#parelizacion con gpu 
+import cudf
+import cupy as cp
+
+from cuml.experimental.preprocessing import KNNImputer
+
+def impute_precipitation_for_station(station_data, n_neighbors=5):
+    station_data_gpu = cudf.DataFrame.from_pandas(station_data)
+    imputer = KNNImputer(n_neighbors=n_neighbors)
+    station_data_imputed = imputer.fit_transform(station_data_gpu[['precipitation']])
+    station_data['precipitation_imputed'] = cp.asnumpy(station_data_imputed.values).flatten()
+    return station_data
+
+def impute_precipitation_parallel(data):
+    stations = data['station_id'].unique()
+    imputed_data = pd.concat(
+        [impute_precipitation_for_station(data[data['station_id'] == station]) for station in stations],
+        ignore_index=True,
+    )
+    return imputed_data
+
+# Crear datos de ejemplo
+data = pd.DataFrame({
+    'station_id': [1, 1, 2, 2, 3, 3],
+    'precipitation': [1, np.nan, 3, 4, np.nan, 6]
+})
+
+imputed_data = impute_precipitation_parallel(data)
+print(imputed_data)
+
+
+
+###prueba
+import pandas as pd
+import numpy as np
+from sklearn.impute import KNNImputer
+import multiprocessing as mp
+
+def impute_precipitation_for_station(data, station, n_neighbors=5):
+    station_data = data[data['station_id'] == station]
+    imputer = KNNImputer(n_neighbors=n_neighbors)
+    station_data_imputed = imputer.fit_transform(station_data[['precipitation']])
+    station_data['precipitation_imputed'] = station_data_imputed
+    return station_data
+
+def impute_precipitation_parallel(data, n_jobs=4):
+    stations = data['station_id'].unique()
+    pool = mp.Pool(processes=n_jobs)
+    results = [
+        pool.apply_async(impute_precipitation_for_station, args=(data, station,))
+        for station in stations
+    ]
+    imputed_data = pd.concat([result.get() for result in results], ignore_index=True)
+    pool.close()
+    pool.join()
+    return imputed_data
+
+# Crear datos de ejemplo
+data = pd.DataFrame({
+    'station_id': [1, 1, 2, 2, 3, 3],
+    'precipitation': [1, np.nan, 3, 4, np.nan, 6]
+})
+
+imputed_data = impute_precipitation_parallel(data)
+print(imputed_data)
