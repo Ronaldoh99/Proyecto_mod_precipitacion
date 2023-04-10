@@ -252,7 +252,7 @@ datosaexportar_seleccionados<- Datos_seleccionados[,c(1:5)]
 datosaexportar_seleccionados
 #datos mas completos
 
-write.table(datosaexportar_seleccionados, "Datos/datos_seleccionados_para_modelo_coordenadas.txt", sep = ";", row.names = FALSE, col.names = TRUE, quote = FALSE)
+write.csv2(datosaexportar_seleccionados, "Datos/datos_seleccionados_para_modelo_coordenadas.csv", sep = ";", row.names = FALSE, col.names = TRUE, quote = FALSE)
 
 
 
