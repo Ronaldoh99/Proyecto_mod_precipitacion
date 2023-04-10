@@ -234,7 +234,25 @@ library(utils)
 #str(datosprueba2)
 
 #exportar datos con estaciones filtradas 57 en total antes 84
-write.table(Datos_seleccionados, "Datos/datos_seleccionadods_para_modelo.txt", sep = ";", row.names = FALSE, col.names = TRUE, quote = FALSE)
+#seleccion de estaciones para establece periodo de investigacion la cual es entre 1980 hasta el 2016 
+#listado de numero de la fila para eliminar de la tabla datosmeta
+lista_a_eliminar<-c(2,4,10,19,26,31,34,38,44,51,52,53,57,59,60,64,69,75,76,80,82,72,71,61,35,36,55)
+length(lista_a_eliminar)#total de estaciones eliminadas 27
+
+Datos_seleccionados <- datosmeta[-lista_a_eliminar,] %>%
+  mutate(combined = pmap(list(id, lat, lon, Nombre, data), function(id, lat, lon, Nombre ,data) {
+    mutate(data, ID = id, LAT = lat, LON = lon, NOMBRE = Nombre)
+  })) %>%
+  select(combined) %>%
+  unnest(cols = c(combined))
+
+print(Datos_seleccionados)
+
+datosaexportar_seleccionados<- Datos_seleccionados[,c(1:5)]
+datosaexportar_seleccionados
+#datos mas completos
+
+write.table(datosaexportar_seleccionados, "Datos/datos_seleccionados_para_modelo_coordenadas.txt", sep = ";", row.names = FALSE, col.names = TRUE, quote = FALSE)
 
 
 
