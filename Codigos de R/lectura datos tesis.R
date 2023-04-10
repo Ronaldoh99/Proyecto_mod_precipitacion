@@ -207,6 +207,22 @@ datos_combinados <- datosmeta %>%
 print(datos_combinados)         #observar los datos
 is.data.frame(datos_combinados) #confirmar que es data.frame
 str(datos_combinados)
+
+
+#seleccion de estaciones para establece periodo de investigacion la cual es entre 1980 hasta el 2016 
+#listado de numero de la fila para eliminar de la tabla datosmeta
+lista_a_eliminar<-c(2,4,10,19,26,31,34,38,44,51,52,53,57,59,60,64,69,75,76,80,82,72,71,61,35,36,55)
+length(lista_a_eliminar)#total de estaciones eliminadas 27
+
+Datos_seleccionados <-datosmeta[-lista_a_eliminar,] %>%
+  mutate(combined = map2(id, data, ~ mutate(.y, ID = .x))) %>%
+  select(combined) %>%
+  unnest(cols = c(combined))
+
+print(Datos_seleccionados)         #observar los datos
+is.data.frame(Datos_seleccionados) #confirmar que es data.frame
+str(Datos_seleccionados)
+
 #Exportacion de datos en formato para modelo KNN que se ejecutara en python
 
 library(utils)
@@ -216,6 +232,10 @@ library(utils)
 #str(datosprueba1)
 #datosprueba2<-read.csv("Datos/datos_combinados_para_modelo.txt",sep = ";")
 #str(datosprueba2)
+
+#exportar datos con estaciones filtradas 57 en total antes 84
+write.table(Datos_seleccionados, "Datos/datos_seleccionadods_para_modelo.txt", sep = ";", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
 
 
 #Tranformar para que se guarde las columnas como nombre del data frame
