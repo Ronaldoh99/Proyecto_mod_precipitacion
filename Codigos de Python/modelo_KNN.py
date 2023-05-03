@@ -177,7 +177,7 @@ def impute_precipitation_for_station(station_data, n_neighbors=5):
     station_data['prec_imputed'] = station_data_imputed
     return station_data
 
-def impute_precipitation_parallel(data, n_jobs=-1):
+def impute_precipitation_parallel(data, n_jobs=5):
     stations = data['ID'].unique()
     results = Parallel(n_jobs=n_jobs)(
         delayed(impute_precipitation_for_station)(data[data['ID'] == station]) for station in stations
@@ -209,7 +209,7 @@ imputed_data = impute_precipitation_parallel(data)
 print(imputed_data)
 imputed_data.info()
 
-
+imputed_data[['prec','prec_imputed']].describe()
 #####prueba 2.0  funciona con todos los datos 
 
 #instalar a la fuerza 
