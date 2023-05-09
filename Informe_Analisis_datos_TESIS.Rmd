@@ -6,10 +6,12 @@ output:
   html_document:
     df_print: paged
 ---
+
 Librerias a usar
+
 ```{r echo=TRUE,warning=FALSE, message=FALSE }
 
-Paquetes usados
+#Paquetes usados
 
 #utilizados para la tesis
 library(colmaps)
@@ -23,7 +25,7 @@ library(broom)
 
 ```
 
-\#Análisis de la precipitación en el departamento del Meta
+#Análisis de la precipitación en el departamento del Meta
 
 El departamento del meta situado en el centro de Colombia al oeste de los Andes comprende una superficie de 85.635 Km2 y su población en el 2018 fue de 1,3 millones de habitantes, Su capital es Villavicencio. Destacado por su diversa fauna y flora registrando 6.965 especies biológicas. El Meta está localizado entre los 04º54'25'' y los 01º36'52'' de latitud norte, y los 71º4'38'' y 74º53'57'' de longitud oeste. Limitando con el norte de Bogotá Capital de Colombia, siendo el 4 departamento más extenso de Colombia.
 
@@ -31,7 +33,11 @@ Su principal participación porcentual de la actividad económica esta situada p
 
 Con influencias intertropicales o de ZCIT (zona de convergencia intertropical) , también conocida como Zona de convergencia ecuatorial se caracteriza por ser curvas con extensiones que en Colombia se tiene presencia de las 2 franjas como se observa en la Figura 1.Donde el fenómeno de la niña y el niño los cuales están estrechamente relacionados con las zonas de convergencia intertropical.
 
-Este departamento se encuentra ubicado en la región de la Orinoquia, al este del país, y es atravesado por importantes ríos como el Meta y el Guaviare. Por lo que sus temporadas de estos fenómenos se comprenden en la temporada seca (niño) se extiende generalmente de el mes de diciembre hasta marzo, mientras que la temporada de lluvias (niña) se extiende de abril a noviembre .
+![january-july.png\|thumb\|ITCZ january-july]]-Dominio publico](images/mapa%20de%20vientos.jpg)
+
+Este departamento se encuentra ubicado en la región de la Orinoquia, al este del país, y es atravesado por importantes ríos como el Meta y el Guaviare. Por lo que sus temporadas de estos fenómenos se comprenden en la temporada seca (niño) se extiende generalmente de el mes de diciembre hasta marzo, mientras que la temporada de lluvias (niña) se extiende de abril a noviembre (IDEAM).
+
+Se observa el mapa de Colombia resaltando el departamento objeto de estudio Meta
 
 ```{r}
 
@@ -47,7 +53,7 @@ departamentos_sf <- st_as_sf(departamentos)
 # Crear el gráfico base
 mapa_ggplot <- ggplot() +
   geom_sf(data = departamentos_sf, aes(fill = is_meta), color = "black", size = 0.1) +
-  scale_fill_manual(values = c("Otros departamentos" = "white", "Meta" = "dodgerblue"), name = "Departamentos", labels = c("Otros departamentos", "Meta")) +
+  scale_fill_manual(values = c("Otros departamentos" = "white", "Meta" = "dodgerblue"), name = "Departamentos", labels = c("Meta","Otros departamentos")) +
   coord_sf()
 
 # Agregar el título y ajustar los ejes para mostrar longitudes y latitudes
@@ -59,9 +65,7 @@ mapa_ggplot +
 
 ```
 
-Se observa el mapa de Colombia resaltando el departamento objeto de estudio Meta
-
-Se presenta también el mapa del departamento del Meta
+En la Región de Orinoquía se encuentra el Departamento del meta (aproximadamente entre 2° y 5° de latitud norte y 69° y 75° de longitud oeste), presenta una variabilidad climática y geográfica significativa, lo que lo convierte en un área de interés para el estudio de la precipitación por su diversidad geográfica y variabilidad climática. Con una población de aproximadamente 1 millón de habitantes, concentrada en su mayoría en áreas urbanas como Villavicencio (DANE, 2018), es fundamental comprender cómo las precipitaciones influyen en la región y sus recursos hídricos.
 
 ```{r,warning=FALSE,message=FALSE}
 # Crear una función de escala de colores personalizada con tonos de azul aguamarina
@@ -92,6 +96,23 @@ La Precipitación juega un papel fundamental en la dinámica del ecosistema. La 
 
 La variabilidad de la precipitación en el Departamento del Meta es alta y está influenciada por diferentes factores como la temperatura del mar, el viento, la topografía y la presencia de sistemas atmosféricos como la Zona Tropical Convergente (ZCIT). Además, diferentes investigadores han estudiado los cambios históricos en la precipitación en la región y han encontrado que su comportamiento es muy variable y depende de la Amazonía y del ciclo hidrológico en los océanos Pacífico y Atlántico. En algunas zonas recibe una precipitación media anual alrededor de 3.000mm, mientras que otras zonas puede ser alrededor de 1.500 mm, respecto a la precipitación media mensual se han realizado estimaciones de un patrón estacional definido con meses de alta y baja precipitación con un promedio en un intervalo de 300 a 400 mm en temporadas de lluvia y puede ser inferior a los 50 mm en algunas zonas para las temporadas secas, frente la precipitación semanal esta alrededor de 100 a 200 mm en épocas de lluvia mientras que en temporadas de sequia se presentan valores de 0 para la semana esto se refleja en la figura 44 la cual presenta las graficas de las series temporales a lo largo del tiempo por estaciones en promedio (semanal o diario, por definirse) En promedio para la precipitación diaria en temporadas de lluvias esta alrededor de 20 -- 50 mm en algunas zonas del departamento y para las temporadas secas se presentan datos en 0 para algunas zonas.
 
+```{r}
+#lectura de datos 
+
+```
+
+```{r}
+library(ggplot2)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+colombia <- ne_states(country = "Colombia", returnclass = "sf")
+
+# Filtrar el departamento del Meta
+meta <- colombia[colombia$name == "Meta", ]
+
+```
+
 La precipitación diaria se mide con un instrumento llamado pluviómetro, que registra la cantidad de lluvia que cae en un área específica durante un período de tiempo específico. Un pluviómetro consiste en un recipiente en forma de embudo que recoge el agua de lluvia y la dirige hacia un cilindro. Los cilindros graduados generalmente están graduados en milímetros para que la cantidad de lluvia que cae en un área determinada pueda determinarse con precisión. Los pluviómetros pueden ser automáticos o manuales, y en ambos casos la información que proporcionan se registra en una base de datos para su posterior análisis.
 
 El IDEAM cuenta con los 2 tipos de pluviómetros para realizar el constante seguimiento y registro de las mediciones de la precipitación diario para la precipitación en cada estación de meteorológica, estableciéndose como una variable continua, aunque sus tomas son en putos de horas específicos, se establece continua ya que puede tomar cualquier valor dentro de un rango determinado en este caso la cantidad de precipitación en milímetros.
@@ -111,5 +132,9 @@ leaflet() %>% addTiles() %>% addCircleMarkers(lng = datosmeta$lon,lat = datosmet
 
 
 
+
+```
+
+```{r}
 
 ```
