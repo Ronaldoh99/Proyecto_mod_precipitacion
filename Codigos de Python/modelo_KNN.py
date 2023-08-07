@@ -435,6 +435,92 @@ print("MAE:", mae)
 
 
 
+
+
+
+
+
+
+datosmetacomople = data.dropna()
+from joblib import Parallel, delayed
+from sklearn.impute import KNNImputer
+import pandas as pd
+import numpy as np
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+
+
+def impute_precipitation_for_station(station_data, columns=['prec'], n_neighbors=5):
+    imputer = KNNImputer(n_neighbors=n_neighbors)
+    station_data_imputed = imputer.fit_transform(station_data[columns])
+    station_data['prec_imputed'] = station_data_imputed[:, 0]
+    return station_data
+
+def impute_precipitation_parallel(data, n_jobs=5, columns=['prec']):
+    stations = data['ID'].unique()
+    results = Parallel(n_jobs=n_jobs)(
+        delayed(impute_precipitation_for_station)(data[data['ID'] == station], columns=columns) for station in stations
+    )
+    imputed_data = pd.concat(results, ignore_index=True)
+    return imputed_data
+
+# Cargar y procesar los datos
+datosmetacomople['Date'] = pd.to_datetime(datosmetacomople['Date'])
+
+# Introducir valores faltantes aleatoriamente en la columna 'prec'
+data_with_missing_values = generate_missing_data(datosmetacomople)
+
+# Realizar la imputación en todo el conjunto de datos con valores faltantes
+imputed_data = impute_precipitation_parallel(data_with_missing_values)
+
+def evaluate_imputation_performance(real_values, imputed_values):
+    rmse = np.sqrt(mean_squared_error(real_values, imputed_values))
+    r2 = r2_score(real_values, imputed_values)
+    mae = mean_absolute_error(real_values, imputed_values)
+    return rmse, r2, mae
+
+# Calcular el rendimiento de la imputación para cada estación
+evaluation_results = {}
+for station_id in datosmetacomople['ID'].unique():
+    station_data = imputed_data[imputed_data['ID'] == station_id]
+
+    # Filtrar solo las filas que contienen valores imputados en la columna 'prec'
+    imputed_rows = station_data[station_data['prec'].isna()]
+
+    if not imputed_rows.empty:
+        # Combinar el conjunto de datos imputado con el conjunto de datos original para recuperar los valores reales
+        real_and_imputed = imputed_rows[['ID', 'Date', 'prec_imputed']].merge(datosmetacomople[['ID', 'Date', 'prec']], on=['ID', 'Date'], how='left')
+
+        # Eliminar filas con valores NaN en 'prec_imputed' o 'prec'
+        real_and_imputed = real_and_imputed.dropna(subset=['prec_imputed', 'prec'])
+
+        if not real_and_imputed.empty:
+            # Comparar los valores imputados con los valores originales
+            imputed_values = real_and_imputed['prec_imputed']
+            real_values = real_and_imputed['prec']
+
+            # Evaluar el rendimiento de la imputación
+            rmse, r2, mae = evaluate_imputation_performance(real_values, imputed_values)
+            evaluation_results[station_id] = {
+                'RMSE': rmse,
+                'R2': r2,
+                'MAE': mae
+            }
+
+            
+# Imprimir los resultados de la evaluación
+for station_id, performance in evaluation_results.items():
+    print(f"ID de Estación {station_id}:")
+    if performance['RMSE'] is not None:
+        print(f"  RMSE: {performance['RMSE']:.3f}")
+        print(f"  R2: {performance['R2']:.3f}")
+        print(f"  MAE: {performance['MAE']:.3f}")
+    else:
+        print("  No hay valores faltantes en los datos para esta estación.")
+    print()
+
+
+
+
 ###################PRUEBA PARA PARALELIZAR POR MEDIO DE GPU NVIDIA #############
 ########   SE DEBE CONTAR UNA RTX DE LA SERIE 3000                 ##############
 #parelizacion con gpu no funciona 
