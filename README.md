@@ -1,2 +1,2 @@
 # Proyecto_grado_precipitacion
-Trabajo de grado Modelacion de series climáticas para la precipitación en el valle del Cauca - Tesistas Ronaldo Hernandez - Hector Velasco , Profesores: David  Arango  , Alvaro Florez
+Trabajo de grado Imputación de datos faltantes en series climáticas para la precipitación en el Departamento del Meta- Tesistas Ronaldo Hernandez - Hector Velasco , Profesores: David Arango , Alvaro Florez
