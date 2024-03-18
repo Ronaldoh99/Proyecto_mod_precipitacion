@@ -170,8 +170,12 @@ ggplot(data = datos_combinados, aes(x = Date, y = prec)) +
 
 # Combinar todos los data.frames en un solo data.frame y agregar una columna con el índice y el nombre
 datos_combinados <- data.frame()
+# Combinar todos los data.frames en un solo data.frame y agregar una columna con el índice y el nombre
+datosmeta<-datosmeta[-lista_a_eliminar,]
+datos_combinados <- data.frame()
 
-for (i in 1:12) {
+
+for (i in 38:56) {
   temp_df <- datosmeta[[3]][[i]]
   temp_df$indice <- i
   temp_df$nombre <- datosmeta[[8]][[i]]
@@ -190,10 +194,7 @@ ggplot(data = datos_combinados, aes(x = Date, y = prec)) +
         strip.text.x = element_text(size = 10, face = "bold"))
 
 
-############# GRAFICO CIRCULO CORRELACION #############################
-library(ggcorrplot)
-library(tidyverse)
-library(purrr)
+
 
 
 #Transformacion de los datos para sacar los dataframes y tener las variables fecha y prec
