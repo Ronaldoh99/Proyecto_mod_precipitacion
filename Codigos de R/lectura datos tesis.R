@@ -319,5 +319,82 @@ ggmap::ggmap(map_base) +
 
 
 
+#Grafico de Histograma y densidad del comportamiento de los resultados del RMSE
+
+
+
+#Lectura de datos en formato para modelo
+datos_precipitacion <-read.csv("Datos/datos_seleccionados_para_modelo_coordenadas.txt",na.strings = c("N/A", " ", "NA"),sep = ";")
+
+
+library(readxl)
+library(ggplot2)
+
+metricas_por_id <- read_excel("F:/TESIS/Proyecto_mod_precipitacion/metricas_por_id.xlsx", 
+                              range = "A1:H52")
+
+str(metricas_por_id)
+
+names(metricas_por_id)
+
+# Datos
+set.seed(5)
+x <- rnorm(1000)
+df <- data.frame(x)
+
+
+
+df <- metricas_por_id
+x <- metricas_por_id$RMSE
+y <- metricas_por_id$MAE
+z <- metricas_por_id$MAPE
+w <- metricas_por_id$R2
+
+# Histograma con densidad
+ggplot(df, aes(x = x)) + 
+  geom_histogram(aes(y = ..density..),
+                 colour = 1, fill = "#00CDCD") +
+  geom_density(lwd = 1, colour = 4,
+               fill = 4, alpha = 0.25) 
+
+
+
+# Asegúrate de tener cargado el paquete ggplot2
+library(ggplot2)
+
+library(gridExtra)
+
+
+# Datos de ejemplo
+df <- metricas_por_id
+
+# Creamos una función para generar el histograma con densidad para una métrica específica
+plot_histogram <- function(data, metric, color_fill, color_density, title, Xlab_) {
+  ggplot(data, aes_string(x = metric)) + 
+    geom_histogram(aes(y = ..density..), color = "black", fill = color_fill, bins = 30) +
+    geom_density(color = color_density, fill = color_density, alpha = 0.25) +
+    labs(title = title, x = Xlab_ , y = "Densidad") +
+    theme_minimal()+
+    theme(plot.title = element_text(hjust = 0.5)) 
+}
+
+cov(datos_precipitacion[,-1])
+
+# Asumiendo que tienes tres gráficos llamados grafico1, grafico2 y grafico3
+# Combina los gráficos en un solo cuadro con 1 fila y 3 columnas
+grid.arrange(plot_histogram(df, "RMSE", "#00CDCD", "#1E90FF","RMSE", "Histograma de metrica RMSE"),
+             plot_histogram(df, "MAE", "#32CD32", "#006400","MAE" ,"Histograma de metrica MAE"),
+             plot_histogram(df, "MAPE", "#FFD700", "#FF8C00","MAPE", "Histograma de metrica MAPE"),
+             plot_histogram(df, "R2", "#EE82EE", "#9400D3", expression(R^2) ,bquote("Histograma de " ~ R^2)),  
+             nrow = 2) #numero de filas
+
+# Dibujamos cada gráfico
+plot_histogram(df, "RMSE", "#00CDCD", "#1E90FF", "RMSE")
+plot_histogram(df, "MAE", "#32CD32", "#006400", "MAE")
+plot_histogram(df, "MAPE", "#FFD700", "#FF8C00", "MAPE")
+plot_histogram(df, "R2", "#EE82EE", "#9400D3", "R^2")
+
+
+
 
 
